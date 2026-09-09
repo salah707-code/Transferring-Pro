@@ -1,40 +1,54 @@
-name: Validate (phase1)
+name: Validate Phase 1
 
 on:
   push:
     branches:
-      - main
+      - phase1/restore-foundation
   pull_request:
     branches:
-      - main
+      - phase1/restore-foundation
+  workflow_dispatch:
+
+concurrency:
+  group: validate-phase1-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
-    name: Validate on ubuntu-latest
+    name: Phase 1 — Veltrix validation
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '22'
 
-      - name: Setup Rust (stable) and rustfmt
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt
-          override: true
+      - name: Install Node dependencies
+        run: |
+          set -euo pipefail
+          echo "Installing npm packages"
+          npm install
 
-      - name: Install minimal native deps for Tauri (one apt-get command)
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: Run npm checks & build
+        run: |
+          set -euo pipefail
+          echo "Running npm run check"
+          npm run check
+          echo "Running npm run build"
+          npm run build
+
+      - name: Install native deps for Tauri (if needed)
+        # Minimal, robust install for WebKit/GTK and build dependencies on ubuntu-latest
         run: |
           set -euo pipefail
           echo "Updating apt lists and installing required native packages for Tauri (minimal set)"
+          # Avoid interactive prompts
+          export DEBIAN_FRONTEND=noninteractive
           sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
             build-essential \
@@ -46,22 +60,30 @@ jobs:
             libgtk-3-dev \
             libwebkit2gtk-4.1-dev \
             libayatana-appindicator3-dev \
-            libsecret-1-dev \
-            libgdk-pixbuf2.0-dev
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
+            libsecret-1-dev
 
-      - name: Install npm dependencies
-        run: npm install
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: Run npm check
-        run: npm run check
+      - name: cargo fmt --check
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
 
-      - name: Build frontend
-        run: npm run build
+      - name: cargo check for src-tauri
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path src-tauri/Cargo.toml
 
-      - name: Check Rust formatting
-        run: cargo fmt --all -- --check
-
-      - name: Cargo check (src-tauri)
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+      - name: Verify Phase 1 core files exist
+        run: |
+          set -euo pipefail
+          missing=0
+          test -f package.json || { echo "ERROR: package.json missing"; missing=1; }
+          test -d src || { echo "ERROR: src/ directory missing"; missing=1; }
+          test -f src-tauri/Cargo.toml || { echo "ERROR: src-tauri/Cargo.toml missing"; missing=1; }
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Phase 1 core files missing"
+            exit 1
+          fi
+          echo "Phase 1 core files present"
