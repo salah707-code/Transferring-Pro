@@ -1,46 +1,66 @@
-name: Build Veltrix Windows
+name: Validate Phase 1
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches:
+      - phase1/restore-foundation
+  pull_request:
+    branches:
+      - phase1/restore-foundation
+  workflow_dispatch:
+
+concurrency:
+  group: validate-phase1-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  validate:
+    name: Phase 1 Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-         # cache: npm
+          node-version: '22'
+          cache: npm
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-msvc
-
-     # - name: Verify no Java
-      #  shell: pwsh
-    #    run: ./scripts/verify-no-java.ps1
-
-      - name: Install frontend dependencies
+      - name: Install Node dependencies
         run: npm install
+
+      - name: TypeScript check
+        run: npm run check
 
       - name: Build frontend
         run: npm run build
 
-      - name: Build Tauri installers
-        run: npm run tauri:build
-
-      - name: Upload installers
-        uses: actions/upload-artifact@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          name: Veltrix-Windows
-          path: |
-            src-tauri/target/release/bundle/msi/*.msi
-            src-tauri/target/release/bundle/nsis/*.exe
-          if-no-files-found: error
+          components: rustfmt
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Check Rust project
+        run: cargo check --manifest-path src-tauri/Cargo.toml
+
+      - name: Verify Phase 1 files
+        run: |
+          test -f src/main.tsx
+          test -f src/App.tsx
+          test -f src/index.css
+
+          test -f src-tauri/Cargo.toml
+          test -f src-tauri/tauri.conf.json
+          test -f src-tauri/src/main.rs
+          test -f src-tauri/src/lib.rs
+
+          echo "All required Phase 1 files are present."
+
+      - name: Phase 1 validation completed
+        run: echo "Phase 1 validation passed successfully."
