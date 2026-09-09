@@ -1,0 +1,20 @@
+{
+  "Dashboard": "Dashboard",
+  "Downloads": "Downloads",
+  "Uploads": "Uploads",
+  "Queue": "Queue",
+  "History": "History",
+  "Scheduler": "Scheduler",
+  "Settings": "Settings",
+  "Add Link": "Add Link",
+  "Add File": "Add File",
+  "Search or paste link...": "Search or paste link...",
+  "No transfers yet": "No transfers yet",
+  "Use the sidebar to add downloads or local transfers.": "Use the sidebar to add downloads or local transfers.",
+  "No downloads yet": "No downloads yet",
+  "No uploads yet": "No uploads yet",
+  "No queued transfers": "No queued transfers",
+  "No history yet": "No history yet",
+  "No schedules": "No schedules",
+  "Application settings will appear here.": "Application settings will appear here."
+}

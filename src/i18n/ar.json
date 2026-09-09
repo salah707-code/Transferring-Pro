@@ -1,0 +1,20 @@
+{
+  "Dashboard": "لوحة التحكم",
+  "Downloads": "التنزيلات",
+  "Uploads": "التحميلات",
+  "Queue": "قائمة الانتظار",
+  "History": "السجل",
+  "Scheduler": "المجدول",
+  "Settings": "الإعدادات",
+  "Add Link": "إضافة رابط",
+  "Add File": "إضافة ملف",
+  "Search or paste link...": "ابحث أو الصق الرابط...",
+  "No transfers yet": "لا توجد عمليات نقل بعد",
+  "Use the sidebar to add downloads or local transfers.": "استخدم الشريط الجانبي لإضافة التنزيلات أو النقل المحلي.",
+  "No downloads yet": "لا توجد تنزيلات بعد",
+  "No uploads yet": "لا توجد تحميلات بعد",
+  "No queued transfers": "لا توجد عمليات في قائمة الانتظار",
+  "No history yet": "لا يوجد سجل بعد",
+  "No schedules": "لا توجد مهام مجدولة",
+  "Application settings will appear here.": "سيظهر إعدادات التطبيق هنا."
+}

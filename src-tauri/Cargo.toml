@@ -1,0 +1,18 @@
+[package]
+name = "veltrix-tauri"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Tauri dependency - choose an appropriate version in your environment
+tauri = { version = "2.8.0", features = ["api-all"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[build-dependencies]
+
+[lib]
+name = "veltrix_tauri"
+path = "src/lib.rs"
+
+

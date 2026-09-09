@@ -1,0 +1,51 @@
+/* Basic light-first styles and layout for Veltrix shell */
+:root {
+  --bg: #ffffff;
+  --panel: #f6f8fb;
+  --muted: #6b7280;
+  --accent: #0b62ff; /* Veltrix blue */
+  --text: #0f172a;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0b1220;
+  --panel: #071028;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --text: #e6eef8;
+}
+
+* { box-sizing: border-box; }
+html,body,#root { height: 100%; }
+body { margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg); color: var(--text); }
+
+.app-shell { display: flex; height: 100vh; }
+
+/* Sidebar */
+.sidebar { width: 260px; background: var(--panel); padding: 20px; border-right: 1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; }
+.brand { font-weight:700; font-size:1.1rem; margin-bottom:18px; color:var(--accent); }
+.nav { display:flex; flex-direction:column; gap:8px; }
+.nav button { background:transparent;border:0;padding:10px;border-radius:6px;text-align:left;color:var(--text); cursor:pointer; }
+.nav button.active { background: rgba(11,98,255,0.08); color:var(--accent); }
+
+.sidebar .tools { margin-top:auto; display:flex; gap:8px; }
+.sidebar .tools button { flex:1 }
+
+/* Topbar */
+.main-area { flex:1; display:flex; flex-direction:column; }
+.topbar { height:64px; display:flex; align-items:center; padding:0 16px; border-bottom:1px solid rgba(0,0,0,0.04); background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+.search { flex:1; max-width:760px; display:flex; gap:8px; align-items:center; }
+.search input { width:100%; padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); }
+.controls { display:flex; gap:8px; margin-left:12px; }
+.icon-btn { background:transparent;border:1px solid rgba(0,0,0,0.05); padding:8px;border-radius:6px; cursor:pointer; }
+
+/* Content */
+.content { padding:20px; overflow:auto; }
+.card { background:var(--panel); padding:16px; border-radius:8px; box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
+
+/* Responsive */
+@media (max-width:900px){ .sidebar{display:none;} }
+
+/* RTL adjustments */
+[dir="rtl"] .sidebar { text-align: right; }
+[dir="rtl"] .nav button { text-align: right; }
