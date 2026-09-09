@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Installing npm packages"
-          npm ci || npm install
+          npm install
 
       - name: Run npm checks & build
         run: |
@@ -43,11 +43,24 @@ jobs:
           npm run build
 
       - name: Install native deps for Tauri (if needed)
+        # Minimal, robust install for WebKit/GTK and build dependencies on ubuntu-latest
         run: |
           set -euo pipefail
-          echo "Installing common native deps for Tauri"
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libgtk-3-dev
+          echo "Updating apt lists and installing required native packages for Tauri (minimal set)"
+          # Avoid interactive prompts
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            pkg-config \
+            cmake \
+            libssl-dev \
+            libdbus-1-dev \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.0-dev \
+            libayatana-appindicator3-dev \
+            libsecret-1-dev
 
       - name: Setup Rust (stable)
         uses: dtolnay/rust-toolchain@stable
