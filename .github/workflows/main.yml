@@ -53,7 +53,6 @@ jobs:
           test -f src/main.tsx
           test -f src/App.tsx
           test -f src/index.css
-
           test -f src-tauri/Cargo.toml
           test -f src-tauri/tauri.conf.json
           test -f src-tauri/src/main.rs
