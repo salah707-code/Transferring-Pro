@@ -30,20 +30,22 @@ jobs:
           override: true
 
       - name: Install minimal native deps for Tauri (one apt-get command)
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update
+          sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
             build-essential \
-            curl \
-            ca-certificates \
             pkg-config \
+            cmake \
             libssl-dev \
+            libdbus-1-dev \
+            libglib2.0-dev \
             libgtk-3-dev \
             libwebkit2gtk-4.1-dev \
             libayatana-appindicator3-dev \
-            libnotify-dev \
-            libgdk-pixbuf2.0-dev \
-            libnss3
+            libsecret-1-dev \
+            libgdk-pixbuf2.0-dev
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
 
