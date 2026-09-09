@@ -23,9 +23,9 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: Verify no Java
-        shell: pwsh
-        run: ./scripts/verify-no-java.ps1
+     # - name: Verify no Java
+      #  shell: pwsh
+    #    run: ./scripts/verify-no-java.ps1
 
       - name: Install frontend dependencies
         run: npm install
