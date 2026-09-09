@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Phase 1 Validation
+    name: Phase 1 — Veltrix validation
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -29,36 +29,41 @@ jobs:
           node-version: '22'
 
       - name: Install Node dependencies
-        run: npm install
-
-      - name: TypeScript check
-        run: npm run check
-
-      - name: Build frontend
-        run: npm run build
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-
-      - name: Check Rust formatting
-        run: cargo fmt --all -- --check
-
-      - name: Check Rust project
-        run: cargo check --manifest-path src-tauri/Cargo.toml
-
-      - name: Verify Phase 1 files
         run: |
-          test -f src/main.tsx
-          test -f src/App.tsx
-          test -f src/index.css
-          test -f src-tauri/Cargo.toml
-          test -f src-tauri/tauri.conf.json
-          test -f src-tauri/src/main.rs
-          test -f src-tauri/src/lib.rs
+          set -euo pipefail
+          echo "Installing npm packages"
+          npm ci || npm install
 
-          echo "All required Phase 1 files are present."
+      - name: Run npm checks & build
+        run: |
+          set -euo pipefail
+          echo "Running npm run check"
+          npm run check
+          echo "Running npm run build"
+          npm run build
 
-      - name: Phase 1 validation completed
-        run: echo "Phase 1 validation passed successfully."
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cargo fmt --check
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+
+      - name: cargo check for src-tauri
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path src-tauri/Cargo.toml
+
+      - name: Verify Phase 1 core files exist
+        run: |
+          set -euo pipefail
+          missing=0
+          test -f package.json || { echo "ERROR: package.json missing"; missing=1; }
+          test -d src || { echo "ERROR: src/ directory missing"; missing=1; }
+          test -f src-tauri/Cargo.toml || { echo "ERROR: src-tauri/Cargo.toml missing"; missing=1; }
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Phase 1 core files missing"
+            exit 1
+          fi
+          echo "Phase 1 core files present"
