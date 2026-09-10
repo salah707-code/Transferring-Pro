@@ -64,15 +64,11 @@ jobs:
 
       - name: Setup Rust (stable)
         uses: dtolnay/rust-toolchain@stable
-        - name: cargo fmt --check
+
       - name: Check Rust formatting
         run: |
           set -euo pipefail
           cd src-tauri
-
-      - name: cargo fmt --check
-        run: |
-          set -euo pipefail
           cargo fmt --all -- --check
 
       - name: cargo check for src-tauri
